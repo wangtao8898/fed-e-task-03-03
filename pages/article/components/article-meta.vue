@@ -9,38 +9,47 @@
     <button
       class="btn btn-sm btn-outline-secondary"
       :class="{active: article.author.following}"
-      @click="onFollow(article)"
+      @click="isSelf ? onUpdateArticle(article.slug) : onFollow(article)"
       :disabled="article.disableFollow"
     >
-      <i class="ion-plus-round"></i>
-      &nbsp;
-      Follow {{ article.author.username }}
+      <div v-if="isSelf"><i class="ion-edit"></i>&nbsp; Edit Article</div>
+      <div v-else><i class="ion-plus-round"></i>&nbsp; Follow {{ article.author.username }}</div>
     </button>
     &nbsp;
     <button
       class="btn btn-sm btn-outline-primary"
       :class="{active: article.favorited}"
-      @click="onFavorite(article)"
+      @click="isSelf ? onDeleteArticle(article.slug) : onFavorite(article)"
       :disabled="article.disableFavorite"
     >
-      <i class="ion-heart"></i>
-      &nbsp;
-      Favorite Post <span class="counter">({{ article.favoritesCount }})</span>
+      <div v-if="isSelf"><i class="ion-trash-a"></i>&nbsp; Delete Article</div>
+      <div v-else><i class="ion-heart"></i>&nbsp; Favorite Post <span class="counter">({{ article.favoritesCount }})</span></div>
     </button>
   </div>
 </template>
 
 <script>
 import { follow, unFollow } from '@/api/user'
-import { addFavorite, deleteFavorite } from '@/api/article'
+import { addFavorite, deleteFavorite, deleteArticle } from '@/api/article'
+import { mapState } from 'vuex'
 
 export default {
   name: "ArticleMeta",
   props: ['article'],
+  computed: {
+    ...mapState(['user']),
+    isSelf() {
+      return this.user && this.article.author.username === this.user.username
+    }
+  },
   methods: {
     // 关注/取消关注
     async onFollow (article) {
       article.disableFollow = true
+      if (!this.user) {
+        this.$router.push('/login')
+        return
+      }
       const { author } = article
       if (author.following) {
         await unFollow(author.username)
@@ -54,6 +63,10 @@ export default {
     // 点赞/取消点赞
     async onFavorite (article) {
       article.disableFavorite = true
+      if (!this.user) {
+        this.$router.push('/login')
+        return
+      }
       if (article.favorited) {
         await deleteFavorite(article.slug)
         article.favorited = false
@@ -64,6 +77,14 @@ export default {
         article.favoritesCount ++
       }
       article.disableFavorite = false
+    },
+    onUpdateArticle (slug) {
+      this.$router.push({ name: 'editor', query: { slug }})
+    },
+    async onDeleteArticle (slug) {
+      article.disableFavorite = true
+      await deleteArticle(slug)
+      this.$router.push({ name: 'profile', params: { username: this.user.username }})
     }
   }
 }

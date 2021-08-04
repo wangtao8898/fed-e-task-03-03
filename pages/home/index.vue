@@ -29,10 +29,10 @@
               </li>
               <li class="nav-item">
                 <nuxt-link
-                    class="nav-link"
-                    :class="{active: tab === 'global_feed'}"
-                    exact
-                    :to="{
+                  class="nav-link"
+                  :class="{active: tab === 'global_feed'}"
+                  exact
+                  :to="{
                     name: 'home',
                     query: {
                       tab: 'global_feed'
@@ -42,10 +42,10 @@
               </li>
               <li v-if="tag" class="nav-item">
                 <nuxt-link
-                    class="nav-link"
-                    :class="{active: tab === 'tag'}"
-                    exact
-                    :to="{
+                  class="nav-link"
+                  :class="{active: tab === 'tag'}"
+                  exact
+                  :to="{
                     name: 'home',
                     query: {
                       tab: 'tag',
@@ -137,7 +137,7 @@ export default {
   name: "Home",
   watchQuery: ['page', 'tag', 'tab'], // 监听 query 参数改变
   async asyncData ({ query, store }) {
-    const { page: queryPage , tag, tab = 'global_feed' } = query
+    const { page: queryPage, tag, tab = 'global_feed' } = query
     const page = Number(queryPage || 1)
     const limit = 20
     const getArticleList = store.state.user && tab === 'your_feed' ? getFeedArticles : getArticles
@@ -169,6 +169,10 @@ export default {
   methods: {
     async onFavorite (article) {
       article.disableFavorite = true
+      if (!this.user) {
+        this.$router.push('/login')
+        return
+      }
       if (article.favorited) {
         await deleteFavorite(article.slug)
         article.favorited = false

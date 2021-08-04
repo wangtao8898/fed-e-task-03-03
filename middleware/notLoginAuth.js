@@ -1,6 +1,6 @@
-// 已登录验证
+// 未登录验证
 export default ({ store, redirect }) => {
-  if (store.state.user) {
-    return redirect('/')
+  if (!store.state.user) {
+    return redirect('/login')
   }
 }

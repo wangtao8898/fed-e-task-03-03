@@ -26,7 +26,7 @@
             <fieldset class="form-group">
               <input v-model="user.password" class="form-control form-control-lg" type="password" placeholder="Password" required minlength="8">
             </fieldset>
-            <button class="btn btn-lg btn-primary pull-xs-right">
+            <button class="btn btn-lg btn-primary pull-xs-right" :disabled="isDisabled">
               {{ isLogin ? 'Sign in' : 'Sign up' }}
             </button>
           </form>
@@ -43,7 +43,7 @@ const Cookie = process.client ? require('js-cookie') : undefined
 
 export default {
   name: "Login",
-  middleware: 'notLoginAuth',
+  middleware: 'loginAuth',
   data () {
     return {
       user: {
@@ -51,11 +51,13 @@ export default {
         email: '',
         password: ''
       },
-      errorMsg: {}
+      errorMsg: {},
+      isDisabled: false
     }
   },
   methods: {
     async onSubmit () {
+      this.isDisabled = true
       try {
         const { data } = this.isLogin
           ? await login({
@@ -74,6 +76,7 @@ export default {
       } catch (e) {
         this.errorMsg = e.response.data.errors
       }
+      this.isDisabled = false
     }
   },
   computed: {
