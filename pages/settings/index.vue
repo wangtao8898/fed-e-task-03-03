@@ -23,13 +23,13 @@
               <fieldset class="form-group">
                 <input v-model="user.password" class="form-control form-control-lg" type="password" placeholder="Password" minlength="8">
               </fieldset>
-              <button class="btn btn-lg btn-primary pull-xs-right">
+              <button class="btn btn-lg btn-primary pull-xs-right" :disabled="isDisabled">
                 Update Settings
               </button>
             </fieldset>
           </form>
           <hr/>
-          <button class="btn btn-outline-danger" @click="logout" :disabled="isDisabled">
+          <button class="btn btn-outline-danger" @click="logout">
             Or click here to logout.
           </button>
         </div>

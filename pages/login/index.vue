@@ -76,7 +76,6 @@ export default {
       } catch (e) {
         this.errorMsg = e.response.data.errors
       }
-      this.isDisabled = false
     }
   },
   computed: {

@@ -19,7 +19,7 @@
     <button
       class="btn btn-sm btn-outline-primary"
       :class="{active: article.favorited}"
-      @click="isSelf ? onDeleteArticle(article.slug) : onFavorite(article)"
+      @click="isSelf ? onDeleteArticle(article) : onFavorite(article)"
       :disabled="article.disableFavorite"
     >
       <div v-if="isSelf"><i class="ion-trash-a"></i>&nbsp; Delete Article</div>
@@ -81,9 +81,9 @@ export default {
     onUpdateArticle (slug) {
       this.$router.push({ name: 'editor', query: { slug }})
     },
-    async onDeleteArticle (slug) {
+    async onDeleteArticle (article) {
       article.disableFavorite = true
-      await deleteArticle(slug)
+      await deleteArticle(article.slug)
       this.$router.push({ name: 'profile', params: { username: this.user.username }})
     }
   }
